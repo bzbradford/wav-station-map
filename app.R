@@ -1,3 +1,7 @@
+# library(remotes)
+# install_version("sf", "1.0-5")
+# rsconnect::appDependencies()
+
 library(tidyverse)
 library(sf)
 library(leaflet)
@@ -33,7 +37,43 @@ layers <- list(
 )
 
 ui <- fluidPage(
-  leafletOutput("map", width = "100%", height = "100vh")
+  title = "WAV Stream Monitoring Sites Map",
+  
+  fluidRow(
+    align = "center",
+    a(img(src = "wav-logo-color.png", height = "100px"), href = "https://wateractionvolunteers.org", target = "_blank")
+  ),
+  
+  br(),
+  h2("2021 WAV Monitoring Sites", align = "center"),
+  br(),
+  
+  div(
+    style = "max-width: 1000px; margin: auto; border: 1px solid grey;",
+    leafletOutput("map", width = "100%", height = "800px")
+  ),
+  
+  br(),
+  
+  div(
+    style = "max-width: 1000px; margin: auto;",
+    p(strong(em("More information:"))),
+    p("The sites on the map above show where in the state Water Action Volunteers made water quality monitoring measurements during the 2021 season."),
+    p(strong("Nine Key Elements Plans:"), "These are long-term plans for specific watersheds that provide a framework for improving water quality in a holistic manner. The nine elements help assess the contributing causes and sources of nonpoint source pollution, involve key stakeholders and prioritize restoration and protection strategies to address water quality problems. Lean more about NKEs at the", a("Wisconsin DNR.", href = "https://dnr.wisconsin.gov/topic/Nonpoint/9keyElement", target = "_blank")),
+    p(strong("Baseline monitoring:"), "Volunteers enter the WAV program by training to do baseline stream monitoring. Each year, baseline volunteers journey to their monitoring sites once per month from May to October to collect four baseline parameters: dissolved oxygen, instantaneous temperature, transparency and streamflow. During at least two of these months (May/June and September/October), volunteers also collect macroinvertebrates to calculate a biotic index score. Once per season, some advanced volunteers also conduct a habitat assessment. In 2020, volunteers collected this baseline data at 284 unique monitoring sites. In 2021, these data were collected at 279 unique sites."),
+    p(strong("Nutrient monitoring:"), "After at least one season of baseline monitoring, some WAV volunteers will support special projects monitoring. Special projects monitoring is designed to either use the same methods as DNR professionals for data collection or to meet specific data needs. Recently these special projects have included monitoring with meters, aquatic invasive species monitoring, nutrient monitoring, and deploying continuous temperature monitors. Nutrient monitoring is the most widespread of the special projects. Volunteers sample for total phosphorus concentrations in rivers and streams. In some instances, volunteers also collect suspended solids samples and/or nitrogen panels."),
+    p(strong("Temperature loggers:"), "Across the state there are a number of automatic, deployed temperature loggers that continuously monitor water temperature in streams. This data can be useful for understanding seasonal stream dynamics, as lower temperatures can indicate higher flow rates, more oxygen-rich water, and overall healther stream systems.")
+  ),
+  
+  
+  
+  br(),
+  
+  p(
+    style = "color: grey; font-size: smaller;",
+    align = "center",
+    em(paste("Last updated:", format(file.info(".")$mtime, "%Y-%m-%d")))
+  )
 )
 
 server <- function(input, output, session) {
@@ -107,14 +147,14 @@ server <- function(input, output, session) {
       addLayersControl(
         baseGroups = unlist(basemaps, use.names = F),
         overlayGroups = unlist(layers, use.names = F),
-        options = layersControlOptions(collapsed = FALSE)
+        options = layersControlOptions(collapsed = TRUE)
       ) %>%
       htmlwidgets::onRender("
-    function() {
-      $('.leaflet-control-layers-list').prepend('<b>Basemap:</b>');
-      $('.leaflet-control-layers-overlays').prepend('<b>Map Layers:</b>');
-    }
-  ")
+        function() {
+          $('.leaflet-control-layers-list').prepend('<b>Basemap:</b>');
+          $('.leaflet-control-layers-overlays').prepend('<b>Map Layers:</b>');
+        }
+      ")
   })
 }
 

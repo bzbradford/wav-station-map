@@ -1,0 +1,14 @@
+name: wav-station-map
+title: wav-station-map
+username:
+account: bzbradford
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5784056
+bundleId: 5644128
+url: https://bzbradford.shinyapps.io/wav-station-map/
+when: 1646430385.61029
+lastSyncTime: 1646430385.61029
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|map.R

@@ -5,6 +5,7 @@
 library(tidyverse)
 library(sf)
 library(leaflet)
+library(leaflet.extras)
 library(htmltools)
 library(shiny)
 
@@ -157,6 +158,7 @@ server <- function(input, output, session) {
         overlayGroups = unlist(layers, use.names = F),
         options = layersControlOptions(collapsed = F)
       ) %>%
+      addFullscreenControl(pseudoFullscreen = T) %>%
       htmlwidgets::onRender("
         function() {
           $('.leaflet-control-layers-list').prepend('<b>Basemap:</b>');

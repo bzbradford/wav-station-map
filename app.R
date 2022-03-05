@@ -39,13 +39,22 @@ layers <- list(
 ui <- fluidPage(
   title = "WAV Stream Monitoring Sites Map",
   
-  fluidRow(
+  tags$style(HTML("
+    body {
+      font-family: 'Lato', sans-serif;
+    }
+  ")),
+  
+  div(
     align = "center",
+    style = "margin-top: 1em;",
     a(img(src = "wav-logo-color.png", height = "100px"), href = "https://wateractionvolunteers.org", target = "_blank")
   ),
   
   br(),
+  
   h2("2021 WAV Monitoring Sites", align = "center"),
+  
   br(),
   
   div(
@@ -65,8 +74,6 @@ ui <- fluidPage(
     p(strong("Temperature loggers:"), "Across the state there are a number of automatic, deployed temperature loggers that continuously monitor water temperature in streams. This data can be useful for understanding seasonal stream dynamics, as lower temperatures can indicate higher flow rates, more oxygen-rich water, and overall healther stream systems."),
     p(strong("More information:"), "Visit the Water Action Volunteers web page at", HTML("<a href='https://wateractionvolunteers.org' target='_blank'>wateractionvolunteers.org</a>."))
   ),
-  
-  
   
   br(),
   

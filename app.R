@@ -8,20 +8,20 @@ library(leaflet)
 library(leaflet.extras)
 library(htmltools)
 library(shiny)
-
+library(shinyBS)
+library(DT)
 
 
 # Load data ---------------------------------------------------------------
 
 counties <- read_sf("shp/wi-counties-wgs.shp")
 nkes <- read_sf("shp/nke-plans-2022-wgs.shp")
-
-baseline <- read_sf("data/wav-station-locations.csv") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
-nutrient <- read_sf("data/nutrient-locations.csv") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
-thermistor <- read_sf("data/thermistor-locations.csv") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+baseline <- read_sf("data/wav-station-locations.csv")
+nutrient <- read_sf("data/nutrient-locations.csv")
+thermistor <- read_sf("data/thermistor-locations.csv")
+baseline.sf <- st_as_sf(baseline, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+nutrient.sf <- st_as_sf(nutrient, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+thermistor.sf <- st_as_sf(thermistor, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
 
 basemaps <- list(
   default = "OpenStreetMap",
@@ -36,6 +36,10 @@ layers <- list(
   nutrient = "Nutrient Stations (<span style='color: orange;'>orange</span>)",
   thermistor = "Temperature Loggers (<span style='color: purple;'>purple</span>)"
 )
+
+
+
+# UI ----------------------------------------------------------------------
 
 ui <- fluidPage(
   title = "WAV Stream Monitoring Sites Map",
@@ -76,7 +80,25 @@ ui <- fluidPage(
     p(strong("More information:"), "Visit the Water Action Volunteers web page at", HTML("<a href='https://wateractionvolunteers.org' target='_blank'>wateractionvolunteers.org</a>."))
   ),
   
-  br(),
+  h4("Station lists:"),
+  
+  bsCollapse(
+    bsCollapsePanel(
+      title = "Baseline Monitoring Stations",
+      dataTableOutput("baselineDT"),
+      downloadButton("baselineDL")
+    ),
+    bsCollapsePanel(
+      title = "Nutrient Monitoring Stations",
+      dataTableOutput("nutrientDT"),
+      downloadButton("nutrientDL")
+    ),
+    bsCollapsePanel(
+      title = "Temperature Logging Stations",
+      dataTableOutput("thermistorDT"),
+      downloadButton("thermistorDL")
+    )
+  ),
   
   p(
     style = "color: grey; font-size: smaller;",
@@ -84,6 +106,10 @@ ui <- fluidPage(
     em(paste("Last updated:", format(file.info(".")$mtime, "%Y-%m-%d")))
   )
 )
+
+
+
+# Server ------------------------------------------------------------------
 
 server <- function(input, output, session) {
   output$map <- renderLeaflet({
@@ -109,7 +135,6 @@ server <- function(input, output, session) {
         data = nkes,
         group = layers$nkes,
         label = ~ lapply(paste0("<b>", PLAN_NAME, "</b><br>Ends: ", END_DATE, "<br>Objective: ", OBJECTIVE_), HTML),
-        popup = ~ lapply(paste0("<b>", PLAN_NAME, "</b><br>Ends: ", END_DATE, "<br>Objective: ", OBJECTIVE_), HTML),
         color = "blue",
         weight = 1,
         # fillColor = ~ colorBin("RdYlBu", nkes$END_YEAR)(END_YEAR),
@@ -118,10 +143,9 @@ server <- function(input, output, session) {
         labelOptions = labelOptions(style = list("width" = "300px", "white-space" = "normal"))
       ) %>%
       addCircleMarkers(
-        data = baseline,
+        data = baseline.sf,
         group = layers$baseline,
         label = ~ lapply(paste0("<b>Baseline Monitoring Stations</b><br>", StationID, ": ", StationName), HTML),
-        popup = ~ lapply(paste0("<b>Baseline Monitoring Stations</b><br>", StationID, ": ", StationName), HTML),
         radius = 2.5,
         color = "black",
         weight = 0.5,
@@ -130,10 +154,9 @@ server <- function(input, output, session) {
         options = markerOptions(pane = "points", sticky = F)
       ) %>%
       addCircleMarkers(
-        data = nutrient,
+        data = nutrient.sf,
         group = layers$nutrient,
         label = ~ lapply(paste0("<b>Nutrient Monitoring Station</b><br>", StationID, ": ", StationName), HTML),
-        popup = ~ lapply(paste0("<b>Nutrient Monitoring Station</b><br>", StationID, ": ", StationName), HTML),
         radius = 2.5,
         color = "black",
         weight = 0.5,
@@ -142,10 +165,9 @@ server <- function(input, output, session) {
         options = markerOptions(pane = "points", sticky = F)
       ) %>%
       addCircleMarkers(
-        data = thermistor,
+        data = thermistor.sf,
         group = layers$thermistor,
         label = ~ lapply(paste0("<b>Thermistor Station</b><br>", StationID, ":</b> ", StationName), HTML),
-        popup = ~ lapply(paste0("<b>Thermistor Station</b><br>", StationID, ":</b> ", StationName), HTML),
         radius = 2.5,
         color = "black",
         weight = 0.5,
@@ -156,7 +178,7 @@ server <- function(input, output, session) {
       addLayersControl(
         baseGroups = unlist(basemaps, use.names = F),
         overlayGroups = unlist(layers, use.names = F),
-        options = layersControlOptions(collapsed = F)
+        options = layersControlOptions(collapsed = T)
       ) %>%
       addFullscreenControl(pseudoFullscreen = T) %>%
       htmlwidgets::onRender("
@@ -166,6 +188,30 @@ server <- function(input, output, session) {
         }
       ")
   })
+  
+  output$baselineDT <- renderDataTable({
+    baseline
+  })
+  
+  output$nutrientDT <- renderDataTable({
+    nutrient
+  })
+  
+  output$thermistorDT <- renderDataTable({
+    thermistor
+  })
+  
+  output$baselineDL <- downloadHandler(
+    filename = "wav-baseline-stations.csv",
+    content = function(file) {write_csv(baseline, file)})
+  
+  output$nutrientDL <- downloadHandler(
+    filename = "wav-nutrient-stations.csv",
+    content = function(file) {write_csv(nutrient, file)})
+  
+  output$thermistorDL <- downloadHandler(
+    filename = "wav-temperature-loggers.csv",
+    content = function(file) {write_csv(thermistor, file)})
 }
 
 shinyApp(ui, server)

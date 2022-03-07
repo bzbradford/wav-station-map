@@ -75,31 +75,34 @@ ui <- fluidPage(
     p(strong("DNR Regions:"), "The Department of Natural Resources has grouped Wisconsin's 72 counties into five different regions, which are shown on the map as a light color fill."),
     p(strong("Nine Key Elements Plans:"), "These are long-term plans for specific watersheds that provide a framework for improving water quality in a holistic manner. The nine elements help assess the contributing causes and sources of nonpoint source pollution, involve key stakeholders and prioritize restoration and protection strategies to address water quality problems. Learn more about NKEs at the", HTML("<a href='https://dnr.wisconsin.gov/topic/Nonpoint/9keyElement' target='_blank'>Wisconsin DNR</a>.")),
     p(strong("Baseline monitoring:"), "Volunteers enter the WAV program by training to do baseline stream monitoring. Each year, baseline volunteers journey to their monitoring sites once per month from May to October to collect four baseline parameters: dissolved oxygen, instantaneous temperature, transparency and streamflow. During at least two of these months (May/June and September/October), volunteers also collect macroinvertebrates to calculate a biotic index score. Once per season, some advanced volunteers also conduct a habitat assessment. In 2020, volunteers collected this baseline data at 284 unique monitoring sites. In 2021, these data were collected at 279 unique sites."),
+    bsCollapse(
+      bsCollapsePanel(
+        title = "View all baseline monitoring stations",
+        dataTableOutput("baselineDT"),
+        downloadButton("baselineDL")
+      )
+    ),
     p(strong("Nutrient monitoring:"), "After at least one season of baseline monitoring, some WAV volunteers will support special projects monitoring. Special projects monitoring is designed to either use the same methods as DNR professionals for data collection or to meet specific data needs. Recently these special projects have included monitoring with meters, aquatic invasive species monitoring, nutrient monitoring, and deploying continuous temperature monitors. Nutrient monitoring is the most widespread of the special projects. Volunteers sample for total phosphorus concentrations in rivers and streams. In some instances, volunteers also collect suspended solids samples and/or nitrogen panels."),
+    bsCollapse(
+      bsCollapsePanel(
+        title = "View all nutrient monitoring stations",
+        dataTableOutput("nutrientDT"),
+        downloadButton("nutrientDL")
+      )
+    ),
     p(strong("Temperature loggers:"), "Across the state there are a number of automatic, deployed temperature loggers that continuously monitor water temperature in streams. This data can be useful for understanding seasonal stream dynamics, as lower temperatures can indicate higher flow rates, more oxygen-rich water, and overall healther stream systems."),
+    bsCollapse(
+      bsCollapsePanel(
+        title = "View all temperature logging stations",
+        dataTableOutput("thermistorDT"),
+        downloadButton("thermistorDL")
+      )
+    ),
     p(strong("More information:"), "Visit the Water Action Volunteers web page at", HTML("<a href='https://wateractionvolunteers.org' target='_blank'>wateractionvolunteers.org</a>."))
   ),
   
-  h4("Station lists:"),
-  
-  bsCollapse(
-    bsCollapsePanel(
-      title = "Baseline Monitoring Stations",
-      dataTableOutput("baselineDT"),
-      downloadButton("baselineDL")
-    ),
-    bsCollapsePanel(
-      title = "Nutrient Monitoring Stations",
-      dataTableOutput("nutrientDT"),
-      downloadButton("nutrientDL")
-    ),
-    bsCollapsePanel(
-      title = "Temperature Logging Stations",
-      dataTableOutput("thermistorDT"),
-      downloadButton("thermistorDL")
-    )
-  ),
-  
+  br(),
+
   p(
     style = "color: grey; font-size: smaller;",
     align = "center",

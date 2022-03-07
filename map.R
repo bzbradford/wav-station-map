@@ -22,12 +22,35 @@ counties <- read_sf("shp/wi-counties-wgs.shp")
 nkes <- read_sf("shp/nke-plans-2022-wgs.shp")
 
 # load data
-baseline <- read_sf("data/wav-station-locations.csv") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
-nutrient <- read_sf("data/nutrient-locations.csv") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
-thermistor <- read_sf("data/thermistor-locations.csv") %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+baseline <- read_sf("data/wav-station-locations.csv")
+nutrient <- read_sf("data/nutrient-locations.csv")
+thermistor <- read_sf("data/thermistor-locations.csv")
+baseline.sf <- st_as_sf(baseline, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+nutrient.sf <- st_as_sf(nutrient, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+thermistor.sf <- st_as_sf(thermistor, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+
+# add county names to nutrient and thermistor data
+# baseline.sf %>%
+#   st_join(counties) %>%
+#   st_set_geometry(NULL) %>%
+#   select(StationID, StationName, County = COUNTY_NAM, Region = DNR_REGION, Latitude, Longitude) %>%
+#   mutate(Region = gsub(" Region", "", Region)) %>%
+#   write_csv("data/wav-station-locations.csv")
+# 
+# nutrient.sf %>%
+#   st_join(counties) %>%
+#   st_set_geometry(NULL) %>%
+#   select(StationID, StationName, County = COUNTY_NAM, Region = DNR_REGION, Latitude, Longitude) %>%
+#   mutate(Region = gsub(" Region", "", Region)) %>%
+#   write_csv("data/nutrient-locations.csv")
+# 
+# thermistor.sf %>%
+#   st_join(counties) %>%
+#   st_set_geometry(NULL) %>%
+#   select(StationID, StationName, County = COUNTY_NAM, Region = DNR_REGION, Latitude, Longitude) %>%
+#   mutate(Region = gsub(" Region", "", Region)) %>%
+#   write_csv("data/thermistor-locations.csv")
+
 
 basemaps <- list(
   default = "OpenStreetMap",
@@ -66,7 +89,6 @@ leaflet() %>%
     data = nkes,
     group = layers$nkes,
     label = ~ lapply(paste0("<b>", PLAN_NAME, "</b><br>Ends: ", END_DATE, "<br>Objective: ", OBJECTIVE_), HTML),
-    popup = ~ lapply(paste0("<b>", PLAN_NAME, "</b><br>Ends: ", END_DATE, "<br>Objective: ", OBJECTIVE_), HTML),
     color = "blue",
     weight = 1,
     # fillColor = ~ colorBin("RdYlBu", nkes$END_YEAR)(END_YEAR),
@@ -75,10 +97,9 @@ leaflet() %>%
     labelOptions = labelOptions(style = list("width" = "300px", "white-space" = "normal"))
   ) %>%
   addCircleMarkers(
-    data = baseline,
+    data = baseline.sf,
     group = layers$baseline,
     label = ~ lapply(paste0("<b>Baseline Monitoring Stations</b><br>", StationID, ": ", StationName), HTML),
-    popup = ~ lapply(paste0("<b>Baseline Monitoring Stations</b><br>", StationID, ": ", StationName), HTML),
     radius = 2.5,
     color = "black",
     weight = 0.5,
@@ -87,10 +108,9 @@ leaflet() %>%
     options = markerOptions(pane = "points", sticky = F)
   ) %>%
   addCircleMarkers(
-    data = nutrient,
+    data = nutrient.sf,
     group = layers$nutrient,
     label = ~ lapply(paste0("<b>Nutrient Monitoring Station</b><br>", StationID, ": ", StationName), HTML),
-    popup = ~ lapply(paste0("<b>Nutrient Monitoring Station</b><br>", StationID, ": ", StationName), HTML),
     radius = 2.5,
     color = "black",
     weight = 0.5,
@@ -99,10 +119,9 @@ leaflet() %>%
     options = markerOptions(pane = "points", sticky = F)
   ) %>%
   addCircleMarkers(
-    data = thermistor,
+    data = thermistor.sf,
     group = layers$thermistor,
     label = ~ lapply(paste0("<b>Thermistor Station</b><br>", StationID, ":</b> ", StationName), HTML),
-    popup = ~ lapply(paste0("<b>Thermistor Station</b><br>", StationID, ":</b> ", StationName), HTML),
     radius = 2.5,
     color = "black",
     weight = 0.5,

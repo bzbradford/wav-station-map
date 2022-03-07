@@ -5,10 +5,10 @@ account: bbradford
 server: data-viz.it.wisc.edu
 hostUrl: https://data-viz.it.wisc.edu/__api__
 appId: 273
-bundleId: 1717
+bundleId: 1718
 url: https://data-viz.it.wisc.edu/wav/
-when: 1646666050.9236
-lastSyncTime: 1646666050.9236
+when: 1646669025.25488
+lastSyncTime: 1646669025.25488
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData|map.R
+ignoredFiles: .RData|map.R|nutrient-locations.csv|README.md|thermistor-locations.csv|wav-station-locations.csv

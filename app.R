@@ -42,13 +42,17 @@ layers <- list(
 # UI ----------------------------------------------------------------------
 
 ui <- fluidPage(
-  title = "WAV Stream Monitoring Sites Map",
+  title = "WAV Stream Monitoring Sites",
   
-  tags$style(HTML("
-    body {
-      font-family: 'Lato', sans-serif;
-    }
-  ")),
+  tags$head(
+    tags$link(rel = "shortcut icon", href = "favicon.ico"),
+    includeHTML("google-analytics.html"),
+    tags$style(HTML("
+      body {
+        font-family: 'Lato', sans-serif;
+      }
+    "))
+  ),
   
   div(
     align = "center",

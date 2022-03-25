@@ -52,6 +52,41 @@ thermistor.sf <- st_as_sf(thermistor, coords = c("Longitude", "Latitude"), crs =
 #   write_csv("data/thermistor-locations.csv")
 
 
+# add watersheds to station locations
+# baseline.sf %>%
+#   st_join(huc8[, "HUC8_NAME"]) %>%
+#   st_join(huc10[, "HUC10_NAME"]) %>%
+#   st_join(huc12[, "HUC12_NAME"]) %>%
+#   st_set_geometry(NULL) %>%
+#   select(StationID:Region, HUC8 = HUC8_NAME, HUC10 = HUC10_NAME, HUC12 = HUC12_NAME, everything()) %>%
+#   write_sf("out/baseline-locations.csv")
+# 
+# nutrient.sf %>%
+#   st_join(counties[, c("COUNTY_NAM", "DNR_REGION")]) %>%
+#   st_join(huc8[, "HUC8_NAME"]) %>%
+#   st_join(huc10[, "HUC10_NAME"]) %>%
+#   st_join(huc12[, "HUC12_NAME"]) %>%
+#   st_set_geometry(NULL) %>%
+#   select(StationID, StationName, County = COUNTY_NAM, Region = DNR_REGION, HUC8 = HUC8_NAME, HUC10 = HUC10_NAME, HUC12 = HUC12_NAME, everything()) %>%
+#   write_sf("out/nutrient-locations.csv")
+# 
+# thermistor.sf %>%
+#   st_join(counties[, c("COUNTY_NAM", "DNR_REGION")]) %>%
+#   st_join(huc8[, "HUC8_NAME"]) %>%
+#   st_join(huc10[, "HUC10_NAME"]) %>%
+#   st_join(huc12[, "HUC12_NAME"]) %>%
+#   st_set_geometry(NULL) %>%
+#   select(StationID, StationName, County = COUNTY_NAM, Region = DNR_REGION, HUC8 = HUC8_NAME, HUC10 = HUC10_NAME, HUC12 = HUC12_NAME, everything()) %>%
+#   write_sf("out/thermistor-locations.csv")
+
+baseline.sf %>%
+  select(-c(WBIC, County, Region)) %>%
+  st_join(counties[, c("COUNTY_NAM", "DNR_REGION")]) %>%
+  select(StationID, StationName, County = COUNTY_NAM, Region = DNR_REGION, everything()) %>%
+  st_set_geometry(NULL) %>%
+  write_csv("out/baseline-locations.csv")
+
+
 basemaps <- list(
   default = "OpenStreetMap",
   positron = "Grey Canvas",
@@ -140,4 +175,110 @@ leaflet() %>%
       $('.leaflet-control-layers-overlays').prepend('<b>Map Layers:</b>');
     }
   ")
+
+
+
+
+
+# simplify watershed maps -------------------------------------------------
+
+library(rmapshaper)
+
+huc6 <- read_sf("edit/wi-huc-6-basins-wgs.shp") %>%
+  st_transform(crs = 4326)
+
+huc6_simp <- huc6 %>%
+  ms_simplify(keep = 0.1) %>%
+  st_make_valid()
+
+huc6_simp %>%
+  write_sf("shp/wi-huc-6.shp")
+
+leaflet() %>%
+  addTiles() %>%
+  # addPolygons(
+  #   data = huc8
+  # ) %>%
+  addPolygons(
+    data = huc6_simp,
+    weight = 1
+  )
+
+
+
+
+
+huc8 <- read_sf("edit/wi-huc-8-subbasins-wgs.shp") %>%
+  st_transform(crs = 4326)
+
+huc8_simp <- huc8 %>%
+  ms_simplify(keep = 0.1)
+
+huc8_simp %>%
+  write_sf("edit/wi-huc-8-simp.shp")
+
+leaflet() %>%
+  addTiles() %>%
+  # addPolygons(
+  #   data = huc8
+  # ) %>%
+  addPolygons(
+    data = huc8_simp,
+    weight = 1
+  )
+
+
+huc10 <- read_sf("edit/wi-huc-10-watersheds-wgs.shp") %>%
+  st_transform(crs = 4326)
+
+huc10_simp <- huc10 %>%
+  ms_simplify(keep = 0.1)
+
+huc10_simp %>%
+  write_sf("edit/wi-huc-10-simp.shp")
+
+leaflet() %>%
+  addTiles() %>%
+  # addPolygons(
+  #   data = huc10,
+  #   weight = 1,
+  #   color = "blue"
+  # ) %>%
+  addPolygons(
+    data = huc10_simp,
+    weight = 1,
+    color = "green"
+  )
+
+
+huc12 <- read_sf("edit/wi-huc-12-subwatersheds-wgs.shp") %>%
+  st_transform(crs = 4326)
+
+huc12_simp <- huc12 %>%
+  ms_simplify(keep = 0.1)
+
+huc12_simp %>%
+  write_sf("edit/wi-huc-12-simp.shp")
+
+leaflet() %>%
+  addTiles() %>%
+  # addPolygons(
+  #   data = huc10,
+  #   weight = 1,
+  #   color = "blue"
+  # ) %>%
+  addPolygons(
+    data = huc12_simp,
+    weight = 1,
+    color = "green"
+  )
+
+
+counties <- read_sf("edit/wi-counties-wgs.shp") %>%
+  ms_simplify(keep = 0.1)
+
+counties %>%
+  write_sf("edit/wi-counties-simp.shp")
+
+
 

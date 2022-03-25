@@ -1,51 +1,51 @@
-StationID,StationName,County,Region,Latitude,Longitude
-10040319,Otter Creek NE of STH 82 at Sarnowski property,Vernon,West Central,43.578407,-90.65693
-10012437,West Branch White River - County T (125 Yards West),Waushara,Northeast,44.080322,-89.35333
-10012445,Bird Creek At Antler Drive Just Outside Wautoma,Waushara,Northeast,44.073097,-89.32144
-10028918,Willow Creek At Cth S And Z,Waushara,Northeast,44.07495,-89.14705
-10012287,Turtle Creek at Heidt's backyard,Rock,South Central,42.518715,-89.00913
-10011575,Wilson Creek - 8-Wilson Creek. 50' U.S. Of 770th Ave.,Dunn,West Central,44.9592,-92.05993
-173032,Wilson Creek - Cth O R.Mi-10.1,Dunn,West Central,44.95985,-92.06626
-10029415,DEERSKIN RIVER - OLD HATCHERY ACCESS OFF OF BLACKJACK RD.,Vilas,Northern,45.99612,-89.09541
-10029802,Deerskin River at bend east of Rangeline Rd,Vilas,Northern,45.954674,-89.17443
-10048779,Roy Creek 20 yards E of CTH O culvert,Green Lake,Northeast,43.76612,-89.020966
-243026,Spring Creek at Cth K (Bi),Green Lake,Northeast,43.780636,-89.01467
-10052650,Unnamed Tributary to Silver Creek DS Brooklyn G Rd and 4th Inline Pond (WBIC 5026724),Green Lake,Northeast,43.840874,-88.895706
-10048186,Darien Creek at North Rd,Walworth,Southeast,42.59074,-88.76151
-10021352,Little Turtle Creek at Lake Shore Rd,Walworth,Southeast,42.55548,-88.77145
-10048412,Knapp Creek at Riggin Property,Richland,South Central,43.215633,-90.63226
-10012487,Koshkonong Creek at Rockdale,Dane,South Central,42.97281,-89.03217
-683230,Genesee Creek at Old Village Rd Bi,Waukesha,Southeast,42.956654,-88.35608
-683299,Jericho Creek at CTH LO,Waukesha,Southeast,42.85907,-88.43263
-10038441,Mason Creek at Petersen Rd,Waukesha,Southeast,43.16199,-88.38418
-10011236,Pebble Creek - Pebble Creek at Kame Terrace Rd (25m Upstream),Waukesha,Southeast,43.00724,-88.299736
-10029546,Scuppernong Cr at the footbridge on the Lapham Peak Tr,Waukesha,Southeast,43.01528,-88.394196
-10030864,Spring Brook at Holiday Rd,Waukesha,Southeast,42.94624,-88.34291
-10048647,Little Bear Creek 350 ft. DS CTH B,Richland,South Central,43.25219,-90.20517
-10052568,"Little Bear Creek 18 ft, US of farm road",Sauk,South Central,43.248573,-90.189156
-10044757,West Branch Rock River,Fond du Lac,Northeast,43.68041,-88.65725
-10031557,West Branch of FDL River,Fond du Lac,Northeast,43.76707,-88.50498
-10029782,East Branch of FDL River,Fond du Lac,Northeast,43.758175,-88.45266
-10020964,South Branch Rock River Site 3,Fond du Lac,Northeast,43.64218,-88.820465
-10051141,Fish Creek - Dam at the Boardwalk,Door,Northeast,45.119514,-87.23691
-10010191,Fish Creek - Fish Creek at Hwy 42 (In Park/Bridge),Door,Northeast,45.124496,-87.238716
-10016104,Bark River at Hagedorn and Cushman Rds,Jefferson,South Central,42.960373,-88.67093
-10042539,Mud Creek at Hwy CI,Jefferson,South Central,42.939342,-88.5921
-10043859,Stony Brook on DNR land N of Swamp Rd,Jefferson,South Central,43.18425,-88.96146
-10022082,Koshkonong Creek at Baxter Rd,Dane,South Central,43.104977,-89.166885
-10031637,Pine River at State Highway 60,Richland,South Central,43.222733,-90.30302
-10029414,Deerskin River at FR2178,Vilas,Northern,46.00295,-89.07436
-10029803,Deerskin River at the end Myzska Road on the southeast of river,Vilas,Northern,46.04284,-89.05396
-10050872,Sawmill Creek at Zipsie Property,Green,South Central,42.795174,-89.81641
-10030883,Evergreen River CTH M FIELDS-UPPER PARKING TO RR CROSSING,Langlade,Northern,45.12759,-88.79512
-10040703,Little Pine Creek-115M Downstream Grundy Rd.,Lincoln,Northern,45.418953,-89.58001
-10029929,Hunting River - County T Bridge,Langlade,Northern,45.371426,-89.031845
-10022733,Lily River - Hwy 55/52 Bridge,Langlade,Northern,45.30722,-88.854614
-10030165,Nine Mile Creek - East Hollister Rd Bridge,Langlade,Northern,45.248047,-88.78836
-10040032,Wolf River - Hollister,Langlade,Northern,45.247116,-88.80565
-10040636,West Twin River at Woodland Dunes,Manitowoc,Northeast,44.161247,-87.59332
-10044917,Richland Creek at Byers Road,Crawford,West Central,43.24652,-90.76367
-10032123,Boydtown Creek 400 ft west of Hilldale Rd,Crawford,West Central,43.119755,-90.80816
-10044132,"Shaw Hollow Creek, Kickapoo River - Taylor Ridge Rd",Crawford,West Central,43.22122,-90.84219
-10052569,Unnamed (5035112) at Spring,Crawford,West Central,43.09913,-90.81969
-10032119,Wisconsin River trib 0.5 mi SE of STH 60 and Knob Ln,Crawford,West Central,43.101078,-90.82117
+StationID,StationName,County,Region,HUC8,HUC10,HUC12,Latitude,Longitude
+"10040319",Otter Creek NE of STH 82 at Sarnowski property,Vernon,West Central Region,Kickapoo,Bear Creek-Kickapoo River,Otter Creek,"43.578407","-90.65693"
+"10012437",West Branch White River - County T (125 Yards West),Waushara,Northeast Region,Upper Fox,White River,West Branch White River,"44.080322","-89.35333"
+"10012445",Bird Creek At Antler Drive Just Outside Wautoma,Waushara,Northeast Region,Upper Fox,White River,Soules Creek-White River,"44.073097","-89.32144"
+"10028918",Willow Creek At Cth S And Z,Waushara,Northeast Region,Wolf,Willow Creek-Frontal Lake Poygan,Bruce Creek-Willow Creek,"44.07495","-89.14705"
+"10012287",Turtle Creek at Heidt's backyard,Rock,South Central Region,Middle Rock,Turtle Creek,Spring Brook-Turtle Creek,"42.518715","-89.00913"
+"10011575",Wilson Creek - 8-Wilson Creek. 50' U.S. Of 770th Ave.,Dunn,West Central Region,Red Cedar,Lake Menomin-Red Cedar River,Wilson Creek,"44.9592","-92.05993"
+"173032",Wilson Creek - Cth O R.Mi-10.1,Dunn,West Central Region,Red Cedar,Lake Menomin-Red Cedar River,Wilson Creek,"44.95985","-92.06626"
+"10029415",DEERSKIN RIVER - OLD HATCHERY ACCESS OFF OF BLACKJACK RD.,Vilas,Northern Region,Upper Wisconsin,Deerskin River,Deerskin River,"45.99612","-89.09541"
+"10029802",Deerskin River at bend east of Rangeline Rd,Vilas,Northern Region,Upper Wisconsin,Deerskin River,Deerskin River,"45.954674","-89.17443"
+"10048779",Roy Creek 20 yards E of CTH O culvert,Green Lake,Northeast Region,Upper Fox,Big Green Lake,Big Green Lake,"43.76612","-89.020966"
+"243026",Spring Creek at Cth K (Bi),Green Lake,Northeast Region,Upper Fox,Big Green Lake,Big Green Lake,"43.780636","-89.01467"
+"10052650",Unnamed Tributary to Silver Creek DS Brooklyn G Rd and 4th Inline Pond (WBIC 5026724),Green Lake,Northeast Region,Upper Fox,Big Green Lake,Silver Creek,"43.840874","-88.895706"
+"10048186",Darien Creek at North Rd,Walworth,Southeast Region,Middle Rock,Turtle Creek,City of Darien,"42.59074","-88.76151"
+"10021352",Little Turtle Creek at Lake Shore Rd,Walworth,Southeast Region,Middle Rock,Turtle Creek,Little Turtle Creek,"42.55548","-88.77145"
+"10048412",Knapp Creek at Riggin Property,Richland,South Central Region,Lower Wisconsin,Knapp Creek,Lower Knapp Creek,"43.215633","-90.63226"
+"10012487",Koshkonong Creek at Rockdale,Dane,South Central Region,Middle Rock,Koshkonong Creek,Koshkonong Creek,"42.97281","-89.03217"
+"683230",Genesee Creek at Old Village Rd Bi,Waukesha,Southeast Region,Upper Fox,Eagle Creek-Fox River,Genesee Creek,"42.956654","-88.35608"
+"683299",Jericho Creek at CTH LO,Waukesha,Southeast Region,Upper Fox,Mukwonago River,Jericho Creek,"42.85907","-88.43263"
+"10038441",Mason Creek at Petersen Rd,Waukesha,Southeast Region,Upper Rock,Oconomowoc River,Okauchee Lake-Oconomowoc River,"43.16199","-88.38418"
+"10011236",Pebble Creek - Pebble Creek at Kame Terrace Rd (25m Upstream),Waukesha,Southeast Region,Upper Fox,Pewaukee River-Fox River,Pebble Creek,"43.00724","-88.299736"
+"10029546",Scuppernong Cr at the footbridge on the Lapham Peak Tr,Waukesha,Southeast Region,Middle Rock,Bark River,Scuppernong Creek,"43.01528","-88.394196"
+"10030864",Spring Brook at Holiday Rd,Waukesha,Southeast Region,Upper Fox,Eagle Creek-Fox River,Genesee Creek,"42.94624","-88.34291"
+"10048647",Little Bear Creek 350 ft. DS CTH B,Richland,South Central Region,Lower Wisconsin,Bear Creek,Lower Bear Creek,"43.25219","-90.20517"
+"10052568","Little Bear Creek 18 ft, US of farm road",Sauk,South Central Region,Lower Wisconsin,Bear Creek,Lower Bear Creek,"43.248573","-90.189156"
+"10044757",West Branch Rock River,Fond du Lac,Northeast Region,Upper Rock,West Branch Rock River-Rock River,Headwaters West Branch Rock River,"43.68041","-88.65725"
+"10031557",West Branch of FDL River,Fond du Lac,Northeast Region,Lake Winnebago,Fond Du Lac River,Eldorado Marsh-Fond Du Lac River,"43.76707","-88.50498"
+"10029782",East Branch of FDL River,Fond du Lac,Northeast Region,Lake Winnebago,Fond Du Lac River,Parsons Creek-East Branch Fond Du Lac River,"43.758175","-88.45266"
+"10020964",South Branch Rock River Site 3,Fond du Lac,Northeast Region,Upper Rock,West Branch Rock River-Rock River,Headwaters South Branch Rock River,"43.64218","-88.820465"
+"10051141",Fish Creek - Dam at the Boardwalk,Door,Northeast Region,Door-Kewaunee,Door Peninsula-Frontal Lake Michigan,Fish Creek-Frontal Green Bay,"45.119514","-87.23691"
+"10010191",Fish Creek - Fish Creek at Hwy 42 (In Park/Bridge),Door,Northeast Region,Door-Kewaunee,Door Peninsula-Frontal Lake Michigan,Fish Creek-Frontal Green Bay,"45.124496","-87.238716"
+"10016104",Bark River at Hagedorn and Cushman Rds,Jefferson,South Central Region,Middle Rock,Bark River,Rome Pond-Bark River,"42.960373","-88.67093"
+"10042539",Mud Creek at Hwy CI,Jefferson,South Central Region,Middle Rock,Scupperenong River,Mud Creek-Scuppernong Creek,"42.939342","-88.5921"
+"10043859",Stony Brook on DNR land N of Swamp Rd,Jefferson,South Central Region,Upper Rock,Maunesha River,Stony Brook,"43.18425","-88.96146"
+"10022082",Koshkonong Creek at Baxter Rd,Dane,South Central Region,Middle Rock,Koshkonong Creek,Mud Lake-Koshkonong Creek,"43.104977","-89.166885"
+"10031637",Pine River at State Highway 60,Richland,South Central Region,Lower Wisconsin,Pine River,Pine River,"43.222733","-90.30302"
+"10029414",Deerskin River at FR2178,Vilas,Northern Region,Upper Wisconsin,Deerskin River,Deerskin River,"46.00295","-89.07436"
+"10029803",Deerskin River at the end Myzska Road on the southeast of river,Vilas,Northern Region,Upper Wisconsin,Deerskin River,Deerskin River,"46.04284","-89.05396"
+"10050872",Sawmill Creek at Zipsie Property,Green,South Central Region,Pecatonica,East Branch Pecatonica River,Sawmill Creek,"42.795174","-89.81641"
+"10030883",Evergreen River CTH M FIELDS-UPPER PARKING TO RR CROSSING,Langlade,Northern Region,Wolf,Evergreen River-Wolf River,Elton Creek-Evergreen River,"45.12759","-88.79512"
+"10040703",Little Pine Creek-115M Downstream Grundy Rd.,Lincoln,Northern Region,Lake Dubay,Alexander Lake-Wisconsin River,Little Pine Creek,"45.418953","-89.58001"
+"10029929",Hunting River - County T Bridge,Langlade,Northern Region,Wolf,Lily River,Hunting River,"45.371426","-89.031845"
+"10022733",Lily River - Hwy 55/52 Bridge,Langlade,Northern Region,Wolf,Lily River,East Branch of the Lily River,"45.30722","-88.854614"
+"10030165",Nine Mile Creek - East Hollister Rd Bridge,Langlade,Northern Region,Wolf,Evergreen River-Wolf River,Ninemile Creek,"45.248047","-88.78836"
+"10040032",Wolf River - Hollister,Langlade,Northern Region,Wolf,Evergreen River-Wolf River,Slough Gundy Rapids-Wolf River,"45.247116","-88.80565"
+"10040636",West Twin River at Woodland Dunes,Manitowoc,Northeast Region,Manitowoc-Sheboygan,West Twin River,West Twin River,"44.161247","-87.59332"
+"10044917",Richland Creek at Byers Road,Crawford,West Central Region,Lower Wisconsin,City of Boscobel-Wisconsin River,Richland Creek,"43.24652","-90.76367"
+"10032123",Boydtown Creek 400 ft west of Hilldale Rd,Crawford,West Central Region,Lower Wisconsin,City of Boscobel-Wisconsin River,Clear Creek-Wisconsin River,"43.119755","-90.80816"
+"10044132","Shaw Hollow Creek, Kickapoo River - Taylor Ridge Rd",Crawford,West Central Region,Kickapoo,Kickapoo River,Shaw Hollow-Kickapoo River,"43.22122","-90.84219"
+"10052569",Unnamed (5035112) at Spring,Crawford,West Central Region,Lower Wisconsin,City of Boscobel-Wisconsin River,Clear Creek-Wisconsin River,"43.09913","-90.81969"
+"10032119",Wisconsin River trib 0.5 mi SE of STH 60 and Knob Ln,Crawford,West Central Region,Lower Wisconsin,City of Boscobel-Wisconsin River,Clear Creek-Wisconsin River,"43.101078","-90.82117"

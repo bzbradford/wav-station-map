@@ -22,7 +22,6 @@ huc8 <- read_sf("shp/wi-huc-8.shp")
 huc10 <- read_sf("shp/wi-huc-10.shp")
 huc12 <- read_sf("shp/wi-huc-12.shp")
 
-
 # points
 baseline <- read_sf("data/baseline-locations.csv")
 nutrient <- read_sf("data/nutrient-locations.csv")
@@ -30,6 +29,23 @@ thermistor <- read_sf("data/thermistor-locations.csv")
 baseline.sf <- st_as_sf(baseline, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
 nutrient.sf <- st_as_sf(nutrient, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
 thermistor.sf <- st_as_sf(thermistor, coords = c("Longitude", "Latitude"), crs = 4326, remove = F)
+
+combined <- bind_rows(
+  mutate(baseline, Usage = "Baseline"),
+  mutate(nutrient, Usage = "Nutrient"),
+  mutate(thermistor, Usage = "Temperature")
+)
+
+stn_usage <- combined %>%
+  group_by(StationID) %>%
+  summarise(Usage = paste(Usage, collapse = ", "))
+
+all_stns <- combined %>%
+  select(-"Usage") %>%
+  distinct(StationID, .keep_all = TRUE) %>%
+  left_join(stn_usage, by = "StationID") %>%
+  relocate(Usage, .after = StationName) %>%
+  arrange(StationID)
 
 
 
@@ -83,24 +99,6 @@ ui <- fluidPage(
   
   br(),
   
-  bsCollapse(
-    bsCollapsePanel(
-      title = "Additional map options",
-      value = "opts",
-      radioButtons(
-        inputId = "watershed",
-        label = HTML("Choose which watershed type to show on the map (<span style='color: blue;'>blue shapes</span>):"),
-        choices = list(
-          "Nine Key Elements watershed plans" = "nkes",
-          "HUC8 (Subbasins)" = "huc8",
-          "HUC10 (Watersheds)" = "huc10",
-          "HUC12 (Subwatersheds)" = "huc12"
-        )
-      )
-    ),
-    open = "opts"
-  ),
-  
   h3("Monitoring Stations"),
   p("The sites on the map above show where in the state Water Action Volunteers made water quality monitoring measurements during the 2021 season."),
   p(strong("Baseline monitoring:"), "Volunteers enter the WAV program by training to do baseline stream monitoring. Each year, baseline volunteers journey to their monitoring sites once per month from May to October to collect four baseline parameters: dissolved oxygen, instantaneous temperature, transparency and streamflow. During at least two of these months (May/June and September/October), volunteers also collect macroinvertebrates to calculate a biotic index score. Once per season, some advanced volunteers also conduct a habitat assessment. In 2020, volunteers collected this baseline data at 284 unique monitoring sites. In 2021, these data were collected at 279 unique sites."),
@@ -113,23 +111,7 @@ ui <- fluidPage(
   p(strong("HUC8, HUC10, and HUC12 watersheds:"), "HUC stands for Hydrologic Unit Code and is a sequence of numbers or letters that identify a hydrological feature like a river, lake, or drainage basin. For this map, we are including HUC8 boundaries (subbasins), HUC10 boundaries (watersheds), and HUC12 boundaries (subwatersheds) as optional layers so you can better understand the hydrology of Wisconsin. HUC8 is the largest of these classifications, and HUC12 the smallest."),
   
   h3("Station Lists:"),
-  bsCollapse(
-    bsCollapsePanel(
-      title = "Baseline monitoring stations",
-      div(style = "overflow: auto;", dataTableOutput("baselineDT")),
-      downloadButton("baselineDL")
-    ),
-    bsCollapsePanel(
-      title = "Nutrient monitoring stations",
-      div(style = "overflow: auto;", dataTableOutput("nutrientDT")),
-      downloadButton("nutrientDL")
-    ),
-    bsCollapsePanel(
-      title = "Temperature logging stations",
-      div(style = "overflow: auto;", dataTableOutput("thermistorDT")),
-      downloadButton("thermistorDL")
-    )
-  ),
+  uiOutput("stnLists"),
   
   h3("More Information:"),
   p("Visit the Water Action Volunteers website at", HTML("<a href='https://wateractionvolunteers.org' target='_blank'>wateractionvolunteers.org</a>.")),
@@ -158,31 +140,18 @@ server <- function(input, output, session) {
     two = "Grey Canvas",
     three = "ESRI Topo"
   )
-  
+
   layers <- list(
     counties = "Counties/Regions",
-    watersheds = "Watersheds/NKE Plans (<span style='color: blue;'>blue</span>)",
+    nkes = "NKE Plans (<span style='color: blue;'>blue</span>)",
+    huc8 = "HUC8 Subbasins (<span style='color: blue;'>blue</span>)",
+    huc10 = "HUC10 Watersheds (<span style='color: blue;'>blue</span>)",
+    huc12 = "HUC12 Subwatersheds (<span style='color: blue;'>blue</span>)",
     baseline = "Baseline Stations (<span style='color: green;'>green</span>)",
     nutrient = "Nutrient Stations (<span style='color: orange;'>orange</span>)",
     thermistor = "Temperature Loggers (<span style='color: purple;'>purple</span>)"
   )
-  
-  # create_popup <- function(data) {
-  #   with(data,
-  #     lapply(paste0(
-  #       "<b>Baseline Monitoring Station</b><br>",
-  #       "<br><b>Station ID:</b> ", StationID,
-  #       "<br><b>Name:</b> ", StationName,
-  #       "<br><b>County:</b> ", County, " County",
-  #       "<br><b>Region:</b> ", Region,
-  #       "<br><b>HUC8:</b> ", HUC8, " Subbasin",
-  #       "<br><b>HUC10:</b> ", HUC10, " Watershed",
-  #       "<br><b>HUC12:</b> ", HUC12, " Subwatershed",
-  #       "<br><b>Latitude:</b>", Latitude,
-  #       "<br><b>Longitude:</b>", Longitude
-  #     ), HTML))
-  # }
-  
+
   create_popup <- function(data, title) {
     data %>% {
       cols <- names(.)
@@ -198,18 +167,8 @@ server <- function(input, output, session) {
     }
   }
   
-  # baseline %>% {
-  #   cols <- names(.)
-  #   print(cols)
-  #   lapply(1:nrow(.), function(r) {
-  #     row <- .[r,]
-  #     lapply(1:length(cols), function(c) {
-  #       paste0("<br><b>", cols[c], ":</b> ", row[c])
-  #     }) %>% paste0()
-  #   }) %>% paste0()
-  # }
-
   
+  ## Render initial map ----
   
   output$map <- renderLeaflet({
     leaflet() %>%
@@ -223,55 +182,12 @@ server <- function(input, output, session) {
       addProviderTiles(providers$CartoDB.Positron, group = basemaps$two) %>%
       addProviderTiles(providers$Esri.WorldTopoMap, group = basemaps$three) %>%
       addMapPane("counties", 410) %>%
-      addMapPane("watersheds", 420) %>%
+      addMapPane("huc8", 420) %>%
+      addMapPane("huc10", 421) %>%
+      addMapPane("huc12", 422) %>%
+      addMapPane("nkes", 423) %>%
       addMapPane("points", 430) %>%
-      addPolygons(
-        data = counties,
-        group = layers$counties,
-        label = ~lapply(paste0("<b>", COUNTY_NAM, " County</b><br>", DNR_REGION), HTML),
-        fillOpacity = 0.1,
-        color = "grey",
-        opacity = 0.5,
-        fillColor = ~ colorFactor("Dark2", counties$DNR_REGION)(DNR_REGION),
-        weight = 1,
-        options = pathOptions(pane = "counties")
-      ) %>%
-      addCircleMarkers(
-        data = baseline.sf,
-        group = layers$baseline,
-        label = ~lapply(paste0("<b>Baseline Monitoring Stations</b><br>Station ID: ", StationID, "<br>Name: ", StationName), HTML),
-        popup = ~create_popup(baseline, "<b>Baseline Monitoring Stations</b><br>"),
-        radius = 5,
-        color = "black",
-        weight = 0.5,
-        fillColor = "green",
-        fillOpacity = 0.75,
-        options = markerOptions(pane = "points", sticky = F)
-      ) %>%
-      addCircleMarkers(
-        data = nutrient.sf,
-        group = layers$nutrient,
-        label = ~lapply(paste0("<b>Nutrient Monitoring Station</b><br>Station ID: ", StationID, "<br>Name: ", StationName), HTML),
-        popup = ~create_popup(nutrient, "<b>Nutrient Monitoring Station</b><br>"),
-        radius = 5,
-        color = "black",
-        weight = 0.5,
-        fillColor = "orange",
-        fillOpacity = 0.75,
-        options = markerOptions(pane = "points", sticky = F)
-      ) %>%
-      addCircleMarkers(
-        data = thermistor.sf,
-        group = layers$thermistor,
-        label = ~lapply(paste0("<b>Thermistor Station</b><br>Station ID: ", StationID, "<br>Name: ", StationName), HTML),
-        popup = ~create_popup(thermistor, "<b>Thermistor Station</b><br>"),
-        radius = 5,
-        color = "black",
-        weight = 0.5,
-        fillColor = "purple",
-        fillOpacity = 0.75,
-        options = markerOptions(pane = "points")
-      ) %>%
+      hideGroup(c(layers$huc8, layers$huc10, layers$huc12)) %>%
       addLayersControl(
         baseGroups = unlist(basemaps, use.names = FALSE),
         overlayGroups = unlist(layers, use.names = FALSE),
@@ -307,13 +223,57 @@ server <- function(input, output, session) {
   })
   
   
-  ## Render counties ----
+  ## Render additional map layers ----
   
   observeEvent(TRUE, {
-    leafletProxy("map") %>%
+    map <- leafletProxy("map")
+    color <- "blue"
+    fill_color <- "lightblue"
+    
+    # Points
+    map %>%
+      addCircleMarkers(
+        data = baseline.sf,
+        group = layers$baseline,
+        label = ~lapply(paste0("<b>Baseline Monitoring Stations</b><br>Station ID: ", StationID, "<br>Name: ", StationName), HTML),
+        popup = ~create_popup(baseline, "<b>Baseline Monitoring Stations</b><br>"),
+        radius = 4,
+        color = "black",
+        weight = 0.5,
+        fillColor = "green",
+        fillOpacity = 0.75,
+        options = markerOptions(pane = "points", sticky = F)
+      ) %>%
+      addCircleMarkers(
+        data = nutrient.sf,
+        group = layers$nutrient,
+        label = ~lapply(paste0("<b>Nutrient Monitoring Station</b><br>Station ID: ", StationID, "<br>Name: ", StationName), HTML),
+        popup = ~create_popup(nutrient, "<b>Nutrient Monitoring Station</b><br>"),
+        radius = 4,
+        color = "black",
+        weight = 0.5,
+        fillColor = "orange",
+        fillOpacity = 0.75,
+        options = markerOptions(pane = "points", sticky = F)
+      ) %>%
+      addCircleMarkers(
+        data = thermistor.sf,
+        group = layers$thermistor,
+        label = ~lapply(paste0("<b>Thermistor Station</b><br>Station ID: ", StationID, "<br>Name: ", StationName), HTML),
+        popup = ~create_popup(thermistor, "<b>Thermistor Station</b><br>"),
+        radius = 4,
+        color = "black",
+        weight = 0.5,
+        fillColor = "purple",
+        fillOpacity = 0.75,
+        options = markerOptions(pane = "points")
+      )
+    
+    # Counties
+    map %>%
       addPolygons(
         data = counties,
-        group = layers$watersheds,
+        group = layers$counties,
         label = ~ lapply(paste0("<b>", COUNTY_NAM, " County</b><br>", DNR_REGION), HTML),
         fillOpacity = 0.1,
         color = "grey",
@@ -322,112 +282,140 @@ server <- function(input, output, session) {
         weight = 1,
         options = pathOptions(pane = "counties")
       )
-  })
-  
-  ## Watershed/NKE overlays ----
-  
-  observeEvent(input$watershed, {
-    ws <- input$watershed
-    map <- leafletProxy("map")
-    color <- "blue"
-    fill_color <- "lightblue"
     
-    map %>% clearGroup(layers$watersheds)
+    # Nine Key Elements
+    map %>%
+      addPolygons(
+        data = nkes,
+        group = layers$nkes,
+        label = ~ lapply(paste0("<b>", PLAN_NAME, "</b><br>Ends: ", END_DATE, "<br>Objective: ", OBJECTIVE_), HTML),
+        weight = 1,
+        color = "blue",
+        fillColor = "blue",
+        fillOpacity = 0.1,
+        options = pathOptions(pane = "nkes"),
+        labelOptions = labelOptions(style = list("width" = "300px", "white-space" = "normal"))
+      )
     
-    if (ws == "nkes") {
+    # HUC8
+    map %>%
+      addPolygons(
+        data = huc8,
+        group = layers$huc8,
+        label = ~ lapply(
+          paste0(
+            "<b>", HUC8_NAME, " Subbasin</b>",
+            "<br>HUC8 Code: ", HUC8_CODE,
+            "<br>Area: ", formatC(SHAPE__Are / 1e6, format = "f", big.mark = ",", digits = 2), " sq km"),
+          HTML),
+        weight = 1.5,
+        color = color,
+        fillColor = fill_color,
+        fillOpacity = 0.15,
+        options = pathOptions(pane = "huc8")
+      )
+    
+    # HUC10
+    map %>%
+      addPolygons(
+        data = huc10,
+        group = layers$huc10,
+        label = ~ lapply(
+          paste0(
+            "<b>", HUC10_NAME, " Watershed</b>",
+            "<br>HUC10 Code: ", HUC10_CODE,
+            "<br>Area: ", formatC(SHAPE__Are / 1e6, format = "f", big.mark = ",", digits = 2), " sq km"),
+          HTML),
+        weight = 1,
+        color = color,
+        fillColor = fill_color,
+        fillOpacity = 0.1,
+        options = pathOptions(pane = "huc10")
+      )
+    
+    # HUC12
+    map %>%
+      addPolygons(
+        data = huc12,
+        group = layers$huc12,
+        label = ~ lapply(
+          paste0(
+            "<b>", HUC12_NAME, " Subwatershed</b>",
+            "<br>HUC12 Code: ", HUC12_CODE,
+            "<br>Area: ", formatC(SHAPE__Are / 1e6, format = "f", big.mark = ",", digits = 2), " sq km"),
+          HTML),
+        weight = 0.5,
+        color = color,
+        fillColor = fill_color,
+        fillOpacity = 0.05,
+        options = pathOptions(pane = "huc12")
+      )
+    
+    # Hide the legend after a delay
+    delay(2000, {
       map %>%
-        addPolygons(
-          data = nkes,
-          group = layers$watersheds,
-          label = ~ lapply(paste0("<b>", PLAN_NAME, "</b><br>Ends: ", END_DATE, "<br>Objective: ", OBJECTIVE_), HTML),
-          weight = 1,
-          color = color,
-          fillColor = fill_color,
-          options = pathOptions(pane = "watersheds"),
-          labelOptions = labelOptions(style = list("width" = "300px", "white-space" = "normal"))
-        )
-    } else if (ws == "huc8") {
-      map %>%
-        addPolygons(
-          data = huc8,
-          group = layers$watersheds,
-          label = ~ lapply(
-            paste0(
-              "<b>", HUC8_NAME, " Subbasin</b>",
-              "<br>HUC8 Code: ", HUC8_CODE,
-              "<br>Area: ", formatC(SHAPE__Are / 1e6, format = "f", big.mark = ",", digits = 2), " sq km"),
-            HTML),
-          weight = 1,
-          color = color,
-          fillColor = fill_color,
-          options = pathOptions(pane = "watersheds")
-        )
-    } else if (ws == "huc10") {
-      map %>%
-        addPolygons(
-          data = huc10,
-          group = layers$watersheds,
-          label = ~ lapply(
-            paste0(
-              "<b>", HUC10_NAME, " Watershed</b>",
-              "<br>HUC10 Code: ", HUC10_CODE,
-              "<br>Area: ", formatC(SHAPE__Are / 1e6, format = "f", big.mark = ",", digits = 2), " sq km"),
-            HTML),
-          weight = 1,
-          color = color,
-          fillColor = fill_color,
-          options = pathOptions(pane = "watersheds")
-        )
-    } else if (ws == "huc12") {
-      map %>%
-        addPolygons(
-          data = huc12,
-          group = layers$watersheds,
-          label = ~ lapply(
-            paste0(
-              "<b>", HUC12_NAME, " Subwatershed</b>",
-              "<br>HUC12 Code: ", HUC12_CODE,
-              "<br>Area: ", formatC(SHAPE__Are / 1e6, format = "f", big.mark = ",", digits = 2), " sq km"),
-            HTML),
-          weight = 1,
-          color = color,
-          fillColor = fill_color,
-          options = pathOptions(pane = "watersheds")
-        )
-    }
+      addLayersControl(
+        baseGroups = unlist(basemaps, use.names = FALSE),
+        overlayGroups = unlist(layers, use.names = FALSE),
+        options = layersControlOptions(collapsed = TRUE)
+      )
+    })
+    
   })
   
   
   
   # Table outputs ----
   
-  output$baselineDT <- renderDataTable({
-    baseline
+  output$stnLists <- renderUI({
+    bsCollapse(
+      bsCollapsePanel(
+        title = "Baseline monitoring stations",
+        div(style = "overflow: auto;", renderDataTable(baseline)),
+        downloadButton("baselineDL")
+      ),
+      bsCollapsePanel(
+        title = "Nutrient monitoring stations",
+        div(style = "overflow: auto;", renderDataTable(nutrient)),
+        downloadButton("nutrientDL")
+      ),
+      bsCollapsePanel(
+        title = "Temperature logging stations",
+        div(style = "overflow: auto;", renderDataTable(thermistor)),
+        downloadButton("thermistorDL")
+      ),
+      bsCollapsePanel(
+        title = "All WAV stations",
+        div(style = "overflow: auto;", renderDataTable(all_stns)),
+        downloadButton("allDL")
+      )
+    )
   })
-  
-  output$nutrientDT <- renderDataTable({
-    nutrient
-  })
-  
-  output$thermistorDT <- renderDataTable({
-    thermistor
-  })
-  
+
   
   
   # Download handlers ----
   
   output$baselineDL <- downloadHandler(
     filename = "wav-baseline-stations.csv",
-    content = function(file) {write_csv(baseline, file)})
+    content = function(file) {write_csv(baseline, file)}
+  )
   
   output$nutrientDL <- downloadHandler(
     filename = "wav-nutrient-stations.csv",
-    content = function(file) {write_csv(nutrient, file)})
+    content = function(file) {write_csv(nutrient, file)}
+  )
   
   output$thermistorDL <- downloadHandler(
     filename = "wav-temperature-loggers.csv",
-    content = function(file) {write_csv(thermistor, file)})
+    content = function(file) {write_csv(thermistor, file)}
+  )
+  
+  output$thermistorDL <- downloadHandler(
+    filename = "wav-station-list.csv",
+    content = function(file) {write_csv(all_stns, file)}
+  )
+  
 }
 
 shinyApp(ui, server)
